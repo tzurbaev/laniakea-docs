@@ -30,16 +30,16 @@ Please refer to the [configuration](/configuration) section for more information
 
 Laniakea has two middleware that you might need to use in your project.
 
-### SetResourceRequest
+### `SetResourceRequest`
 
-The first one is`Laniakea\Resources\Middleware\SetResourceRequest`. It binds an `Laniakea\Resources\Interfaces\ResourceRequestInterface`
+The first one is `Laniakea\Resources\Middleware\SetResourceRequest`. It binds an `Laniakea\Resources\Interfaces\ResourceRequestInterface`
 instance to the Laravel's [Service Container](https://laravel.com/docs/container) for the current request.
 
 This middleware is required for all routes that are going to use
 `Laniakea\Resources\Interfaces\ResourceManagerInterface`. Essentially, you'll want to attach this middleware to all
 your API routes that are managed by Laniakea resources.
 
-### SetApiVersion {#SetApiVersion}
+### `SetApiVersion` {#SetApiVersion}
 
 The second one is `Laniakea\Versions\Middleware\SetApiVersion`. It binds an `Laniakea\Versions\Interfaces\ApiVersionInterface`
 instance to the Service Container and is required if you're going to use API versioning.
@@ -76,6 +76,11 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 ```
+
+::: warning
+Both middleware must be executed before Laravel's `Illuminate\Routing\Middleware\SubstituteBindings` middleware.
+Check [Middleware Priority](#middleware-priority) section below for more info.
+:::
 
 Now both middleware are registered, and you can use them in your routes.
 
@@ -115,8 +120,9 @@ Route::group(['middleware' => ['laniakea.request']], function () {
 
 ### Middleware Priority {#middleware-priority}
 
-The `SetApiVersion` middleware must be executed before the Laravel's `Illuminate\Routing\Middleware\SubstituteBindings`
-middleware. Check out Laravel documentation on [middleware priority](https://laravel.com/docs/middleware#sorting-middleware).
+Both `SetResourceRequest` and `SetApiVersion` middleware must be executed before the Laravel's
+`Illuminate\Routing\Middleware\SubstituteBindings` middleware. Check out Laravel documentation on
+[middleware priority](https://laravel.com/docs/middleware#sorting-middleware).
 
 Additionally, you can use [laniakea/middleware-priority](https://github.com/tzurbaev/laravel-middleware-priority) package
 to set middleware priority:
@@ -148,8 +154,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Create fresh middleware priority manager with default middleware priority.
         $manager = MiddlewarePriorityManager::withDefaults($middleware);
 
-        // Place SetApiVersion middleware before SubstituteBindings middleware.
-        $manager->before(SubstituteBindings::class, SetApiVersion::class);
+        // Place SetResourceRequest and SetApiVersion middleware before SubstituteBindings middleware.
+        $manager->before(SubstituteBindings::class, [
+            SetResourceRequest::class, 
+            SetApiVersion::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
