@@ -1,6 +1,6 @@
 # Resource Manager
 
-Resource Manager stitches your [resource](/resources), [repository](/repositories), and [resource request](/resources/request)
+Resource Manager stitches your [resource](/resources), [repository](/repositories), and [resource request](/resources/requests)
 together and performs all required logic to retrieve, filter, sort, paginate, and load relationships for your resources.
 
 ## Using the resource manager
@@ -15,7 +15,7 @@ Both `getPaginator()` and `getList()` methods of `ResourceManagerInterface` acce
 2. `$resource` – instance of `Laniakea\Resources\Interfaces\ResourceInterface`;
 3. `$repository` – instance of `Laniakea\Repositories\Interfaces\RepositoryInterface`;
 4. `$callback` – optional callback with access to the `Laniakea\Repositories\Interfaces\RepositoryQueryBuilderInterface` instance;
-5. `$context` – an array of additional [context](/resources/context) that can be used inside filters and sorters.
+5. `$context` – an array of additional context that can be used inside filters and sorters.
 
 Let's see simple example of how it works. Check the `UsersResource.php` for resource definition.
 

@@ -81,7 +81,7 @@ $query->addCriteria([
 
 :::warning
 While it allows performing multiple operations on a query (such as loading relationships via the 
-[`with`](/repositories#with) method or applying sorting via the [`orderBy`](/repositories/#orderBy) method), it's 
+[`with`](/repositories#with) method or applying sorting via the [`orderBy`](/repositories#orderBy) method), it's 
 strongly recommended to use it only for filtering purposes (only in filters, of course. You are free to use other 
 methods in non-filter contexts).
 :::

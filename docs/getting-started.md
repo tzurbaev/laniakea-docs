@@ -44,7 +44,7 @@ your API routes that are managed by Laniakea resources.
 The second one is `Laniakea\Versions\Middleware\SetApiVersion`. It binds an `Laniakea\Versions\Interfaces\ApiVersionInterface`
 instance to the Service Container and is required if you're going to use API versioning.
 
-For more information on API versioning, please refer to the [API Versions](/versions) section.
+For more information on API versioning, please refer to the [API Versions](/resources/versions) section.
 
 ### Register Middleware {#register-middleware}
 

@@ -94,9 +94,9 @@ The **second argument** is the column to sort by. It matches the sorter name (ar
 ## Direction
 
 The **third argument** is the direction of sorting. It can be either `asc` for ascending order or `desc` for descending
-order (always in lower case, if default [`ResourceRequest`](/resources/request) is used).
+order (always in lower case, if default [`ResourceRequest`](/resources/requests) is used).
 
-The direction value is managed by [`ResourceRequest`](/resources/request) instance.
+The direction value is managed by [`ResourceRequest`](/resources/requests) instance.
 
 ## Default sorting
 
