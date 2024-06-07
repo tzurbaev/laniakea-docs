@@ -11,8 +11,8 @@ be reported as regular exceptions.
 - It renders exceptions with a consistent JSON schema (see example below);
 - It can have translations for error messages;
 - It supports JSON responses and View-based responses;
-- It has a `Illuminate\Validation\ValidationException` wrapper and rendering method so validation exceptions can be
-rendered in the same JSON format as other exceptions;
+- It has a `Illuminate\Validation\ValidationException` wrapper and dedicated rendering method for validation exceptions,
+so they can be rendered in the same JSON format as other exceptions;
 - You can define custom metadata and HTTP headers per exception.
 
 ## Reporting and rendering
@@ -20,7 +20,8 @@ rendered in the same JSON format as other exceptions;
 You can disable reporting for these exceptions and render them in the package-intended format by using Laravel bootstrap's
 `withExceptions()` method.
 
-```php
+::: code-group
+```php [bootstrap/app.php]
 <?php
 
 use Illuminate\Foundation\Application;
@@ -54,6 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(fn (ValidationException $e, Request $request) => $renderer->renderValidationException($e, $request));
     })->create();
 ```
+:::
 
 The `render()` method of `Laniakea\Exceptions\ExceptionRenderer` will render the exception in the following format:
 
@@ -89,7 +91,9 @@ If you want to render it with Laniakea's renderer, you can use the `renderValida
 ```php
 use Illuminate\Validation\ValidationException;
 
-$exceptions->renderable(fn (ValidationException $e, Request $request) => $renderer->renderValidationException($e, $request));
+$exceptions->renderable(function (ValidationException $e, Request $request) {
+    $renderer->renderValidationException($e, $request)
+});
 ```
 
 This method will wrap your `ValidationException` with `Laniakea\Exceptions\ValidationException` and render it like this:
@@ -97,7 +101,7 @@ This method will wrap your `ValidationException` with `Laniakea\Exceptions\Valid
 ```json
 {
   "error": {
-    "message": "The given data was invalid.",
+    "message": "The name is requried",
     "original_message": "The given data was invalid.",
     "code": "validation.failed",
     "meta": {
@@ -114,7 +118,7 @@ Notice how it matches other exceptions format and also provides list of errors i
 ::: tip
 `ValidationException` wrapper will be used only if the request expects JSON response (i.e. `Accept: application/json` header is present).
 
-Otherwise it will fallback to Laravel's default rendering (or your custom-defined rendering).
+Otherwise it will fall back to Laravel's default renderer (or your custom-defined renderer).
 :::
 
 ## Creating exceptions
@@ -123,8 +127,9 @@ If you want to create new exceptions that should be rendered with Laniakea's ren
 `Laniakea\Exceptions\BaseHttpException` class and override three constants:
 
 - `public const MESSAGE` – the default message of the exception;
-- `public const ERROR_CODE` – string-based error code with dot notation support. This error code can also be used as translation key;
-- `public const HTTP_CODE` – the HTTP status code of the exception.
+- `public const ERROR_CODE` – string-based error code with dot notation support. This error code can also be used as
+[translation key](#message-translations);
+- `public const HTTP_CODE` – the HTTP status code of the exception – the response will be sent with this status.
 
 Here is an example of a custom exception:
 
@@ -222,13 +227,13 @@ throw (new UserNotFoundException())->setHeaders([
 ## Message translations
 
 If your application supports multiple languages, you can use Laravel's translation system to provide localized error
-messages along with error message in English (or any other language that was used to describe `MESSAGE` constant).
+messages along with error message in English (or any other language that was used to describe the `MESSAGE` constant).
 
-By default, Laniakea's exception renderer will use error code (`ERROR_CODE` constant) as a part of translation key.
-It uses `exceptions.` as namespace and `.message` as final translation segment.
+By default, Laniakea's exception renderer will use the error code (`ERROR_CODE`) constant as a part of translation key.
+It's also uses `exceptions.` as the translation namespace and `.message` as the final translation segment.
 
 For example, if your error code is `users.not_found`, the translation key will be `exceptions.users.not_found.message`.
-That means, that Laravel's translation system will look for a translation in `lang/<locale>/exceptions.php` file
+That means that Laravel's translation system will look for a translation in `lang/<locale>/exceptions.php` file
 (where `<locale>` is the current locale of the application):
 
 ```php
@@ -241,9 +246,9 @@ return [
 ];
 ```
 
-If you're OK with described translation paths, there's no need to do anything else. Simply add translations to your
-`lang/<locale>/exceptions.php` file. The translated message will be placed under `message` key in the JSON response
-while original message will be placed under `original_message` key.
+If you're OK with this translation paths, there's no need to do anything else. Simply add translations to your
+`lang/<locale>/exceptions.php` file and Laniakea will pick them up. The translated message will be placed under
+`message` key in the JSON response while original message will be placed under `original_message` key.
 
 
 ```json
@@ -379,8 +384,11 @@ return [
 
 ## Render exceptions as views
 
-If you want to render exceptions as well, you can implement the `Laniakea\Exceptions\RenderableExceptionInterface`
-interface on your exception class and return instance of `Illuminate\View\View` from the `getView()` method.
+The `Laniakea\Exceptions\RenderableExceptionInterface` interface allows you to specify a custom view for rendering your
+exception. The view will be rendered instead of the default JSON response but only if current request does not expect
+a JSON response (i.e. `Accept: application/json` header is not present).
+
+Implement the `getView()` method in your exception class and return an instance of `Illuminate\View\View` to make it work:
 
 ```php
 <?php

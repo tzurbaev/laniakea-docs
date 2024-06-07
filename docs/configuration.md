@@ -69,10 +69,11 @@ return [
 ## Resource registrars
 
 The `registrars` array in the configuration file is used to define your custom resource registrars. A 
-[resource registrar](/resources/registrars) s a class responsible for registering your resources in the
+[resource registrar](/resources/registrars) is a class responsible for registering your resources in the
 Laniakea service container.
 
-To add a new registrar to the `registrars` array, simply add the fully-qualified class name (FQCN) of your registrar to the array:
+To add a new registrar to the `registrars` array, simply add the fully-qualified class name (FQCN) of your registrar 
+to the array:
 
 ```php
 <?php
@@ -94,8 +95,9 @@ full configuration file.
 The `resources.fields` array in the configuration file is used to define the names of the request fields that are used
 for pagination, sorting, and including relations.
 
-For example, if you want to use the `include` field for inclusions (instead of the default `with`) and the
-`limit` field for pagination limit (instead of the default `count`), you can override them in the configuration file:
+For example, if you want to use the `include` field for [inclusions](/resources/inclusions) (instead of the 
+default `with`) and the `limit` field for [pagination](/resources/manager#manager-usage) limit (instead of the
+default `count`), you can override them in the configuration file:
 
 ```php
 <?php
@@ -126,6 +128,12 @@ during pagination, listing, and item loading.
 
 It is very unlikely that you'll need to change this configuration, but if you want to add custom commands or
 swap some default commands, you can do it here.
+
+:::tip
+Due to very unlikely need to change commands list, this documentation currently does not provide any info on
+custom resource commands. If you need to add custom commands, please refer to the source code of the listed commands
+or create an [issue in the repository](https://github.com/tzurbaev/laniakea/issues).
+:::
 
 ### Pagination and listing
 
@@ -161,3 +169,9 @@ return [
     ],
 ];
 ```
+
+:::tip
+Due to very unlikely need to extend default implementations, this documentation currently does not provide any info on
+the interfaces. If you need to change or override managers, please refer to the source code of implementation, or create an
+[issue in the repository](https://github.com/tzurbaev/laniakea/issues).
+:::

@@ -3,7 +3,7 @@
 Resource Manager stitches your [resource](/resources), [repository](/repositories), and [resource request](/resources/requests)
 together and performs all required logic to retrieve, filter, sort, paginate, and load relationships for your resources.
 
-## Using the resource manager
+## Using the resource manager {#manager-usage}
 
 In most cases you'll work with resource manager inside your API controllers. Inject the instance of
 `Laniakea\Resources\Interfaces\ResourceManagerInterface` interface into your controller method and use it for
