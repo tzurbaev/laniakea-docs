@@ -216,4 +216,10 @@ Please refer to the [exceptions](/exceptions) section for more information on ho
 
 ## Usage
 
-Now you can [create your first resource](/resources).
+Now you're ready to [create your first resource](/resources).
+
+## Demo application
+
+If you want to see Laniakea in action, check out the [Laravel 11 demo application](https://github.com/tzurbaev/laniakea-demo)
+that uses all features of Laniakea – including [resources](/resources), [repositories](/repositories),
+[API versioning](/resources/versions), [model settings](/settings) and [forms](/forms).

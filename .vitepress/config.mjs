@@ -8,6 +8,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Demo App', link: 'https://github.com/tzurbaev/laniakea-demo' },
     ],
 
     sidebar: [
