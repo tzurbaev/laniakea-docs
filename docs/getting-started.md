@@ -26,7 +26,7 @@ php artisan vendor:publish --provider="Laniakea\LaniakeaServiceProvider"
 
 Please refer to the [configuration](/configuration) section for more information on how to configure the package.
 
-## Middleware
+## Middleware {#middleware}
 
 Laniakea has two middleware that you might need to use in your project.
 
@@ -38,6 +38,11 @@ instance to the Laravel's [Service Container](https://laravel.com/docs/container
 This middleware is required for all routes that are going to use
 `Laniakea\Resources\Interfaces\ResourceManagerInterface`. Essentially, you'll want to attach this middleware to all
 your API routes that are managed by Laniakea resources.
+
+::: warning
+Even if you're not using `ResourceManagerInterface` directly, it still can be invoked in [route model bindings](/resources/registrars).
+Attach this middleware to all routes that might use model bindings (even non-API routes).
+:::
 
 ### `SetApiVersion` {#SetApiVersion}
 

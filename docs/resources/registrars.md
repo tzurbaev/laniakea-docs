@@ -5,6 +5,14 @@ feature with your resources.
 
 Registrars also can be used to define API Version bindings for your services. Read more in [separate article](/resources/versions).
 
+::: warning
+Since route model bindings are resolved via `Laniakea\Resources\Interfaces\ResourceManagerInterface`, it is required
+to attach the `Laniakea\Resources\Middleware\SetResourceRequest` middleware to all routes that are going to use
+route model bindings.
+
+[Learn more about middleware](/getting-started#middleware)
+:::
+
 ## Creating registrars
 
 All resource registrars must implement the `Laniakea\Resources\Interfaces\ResourceRegistrarInterface` interface.
@@ -108,6 +116,21 @@ Now you can use route model binding with your users resource. Just make sure tha
 as you've defined in the registrar.
 
 ::: code-group
+```php [api.php]
+<?php
+
+declare(strict_types=1);
+
+use App\Http\Controllers\UsersApiController;
+use Illuminate\Support\Facades\Route;
+
+Route::group(['middleware' => ['laniakea.request']], function () {
+    Route::get(
+      '/users/{user}',// [!code focus]
+      [UsersApiController::class, 'show'],
+    )->name('users.show');
+});
+```
 ```php [UsersApiController.php]
 <?php
 
@@ -127,21 +150,5 @@ class UsersApiController
         return response()->json($user);
     }
 }
-```
-
-```php [api.php]
-<?php
-
-declare(strict_types=1);
-
-use App\Http\Controllers\UsersApiController;
-use Illuminate\Support\Facades\Route;
-
-Route::group(['middleware' => ['laniakea.request']], function () {
-    Route::get(
-      '/users/{user}',// [!code focus]
-      [UsersApiController::class, 'show'],
-    )->name('users.show');
-});
 ```
 :::
