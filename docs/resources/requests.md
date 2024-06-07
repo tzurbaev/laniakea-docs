@@ -34,3 +34,56 @@ into your controller method. If the `SetResourceRequest` middleware was attached
 will receive instance of `Laniakea\Resources\Requests\ResourceRequest` class.
 
 Now you can either use this request instance directly, or pass it to the [Resource Manager](/resources/manager)'s methods.
+
+## Retrieve list of inclusions {#get-inclusions}
+
+In some cases you might need to know what inclusions were requested by the client. For example, if you're using
+[Fractal Transformers](https://fractal.thephpleague.com), you'll need list of inclusions for `parseIncludes` method.
+
+You can retrieve them using the `getInclusions()` method of the resource request instance (example below uses 
+[Spatie's](https://spatie.be) [`spatie/laravel-fractal`](https://github.com/spatie/laravel-fractal) package):
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Models\Book;
+use App\Repositories\BooksRepository;
+use App\Resources\BooksResource;
+use App\Transformers\Books\BookTransformer;
+use Illuminate\Http\JsonResponse;
+use Laniakea\Resources\Interfaces\ResourceManagerInterface;
+use Laniakea\Resources\Interfaces\ResourceRequestInterface;
+
+class BooksApiController
+{
+    public function index(
+        ResourceRequestInterface $request, 
+        ResourceManagerInterface $manager,
+    ): JsonResponse {
+        $paginator = $manager->getPaginator(
+            $request,
+            new BooksResource(),
+            new BooksRepository(),
+        );
+
+        return fractal($paginator, new BookTransformer())
+            // Make sure to pass list of inclusions to the fractal transformer.
+            ->parseIncludes($request->getInclusions())
+            ->respond();
+    }
+
+    public function show(
+        ResourceRequestInterface $request,
+        Book $book,
+    ): JsonResponse {
+        return fractal($book, new BookTransformer())
+            // Make sure to pass list of inclusions to the fractal transformer.
+            ->parseIncludes($request->getInclusions())
+            ->respond();
+    }
+}
+```
