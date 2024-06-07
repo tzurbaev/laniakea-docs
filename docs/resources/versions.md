@@ -56,6 +56,12 @@ The request and response schema for version 2 might look like this:
 
 These requests and responses are different, but the business logic that processes these requests and responses might be the same.
 
+::: tip
+You can version virtually any service you want (including [repositories](/repositories) and [resources](/resources)).
+
+And of course you can version your own userland code as well.
+:::
+
 ## Create product example
 
 Let's say you have `StoreProductRequest`, `CreateProduct` action, `ProductTransformer` and `ProductsApiController`
@@ -264,9 +270,10 @@ declare(strict_types=1);
 
 namespace App\Transformers;
 
+use App\Interfaces\Products\ProductTransformerInterface;
 use App\Models\Product;
 
-class ProductTransformer
+class ProductTransformer implements ProductTransformerInterface
 {
     public function toArray(Product $product): array
     {
@@ -316,11 +323,13 @@ interface ProductTransformerInterface
 
 ## Register API versions
 
-Use the Laniakea's `Laniakea\Versions\Interfaces\VersionedResourceRegistrarInterface` registrar to register your API versions.
+Laniakea provides `Laniakea\Versions\Interfaces\VersionedResourceRegistrarInterface` interface that can be implemented
+on your [resource registrar](/resources/registrars) class to bind different versions of your services to the Laravel's
+Service Container.
 
 In the `bindVersions()` method you have access to the `Laniakea\Versions\Interfaces\VersionBinderInterface` instance.
-This binder's `bind()` method accepts version name as first argument (in this case `v1`),
-array of bindings for this version as second argument and `boolean` flag that you can use to indicate this version as default.
+Its `bind()` method accepts version name as first argument (in this case `v1`),
+array of bindings for this version as second argument and `boolean` flag that you can use to mark this version as default.
 
 ```php
 <?php
@@ -335,11 +344,12 @@ use App\Interfaces\Products\StoreProductRequestInterface;
 use App\Repositories\ProductsRepository;
 use App\Resources\ProductsResource;
 use App\Transformers\ProductTransformer;
+use Laniakea\Resources\Interfaces\ResourceRegistrarInterface;
 use Laniakea\Resources\Interfaces\ResourceRouteBinderInterface;
 use Laniakea\Versions\Interfaces\VersionBinderInterface;
 use Laniakea\Versions\Interfaces\VersionedResourceRegistrarInterface;
 
-class ProductsRegistrar implements VersionedResourceRegistrarInterface
+class ProductsRegistrar implements ResourceRegistrarInterface, VersionedResourceRegistrarInterface
 {
     public function bindVersions(VersionBinderInterface $binder): void
     {
@@ -374,11 +384,12 @@ use App\Repositories\ProductsRepository;
 use App\Resources\ProductsResource;
 use App\Transformers\ProductTransformer;
 use App\Transformers\ProductTransformerV2;
+use Laniakea\Resources\Interfaces\ResourceRegistrarInterface;
 use Laniakea\Resources\Interfaces\ResourceRouteBinderInterface;
 use Laniakea\Versions\Interfaces\VersionBinderInterface;
 use Laniakea\Versions\Interfaces\VersionedResourceRegistrarInterface;
 
-class ProductsRegistrar implements VersionedResourceRegistrarInterface
+class ProductsRegistrar implements ResourceRegistrarInterface, VersionedResourceRegistrarInterface
 {
     public function bindVersions(VersionBinderInterface $binder): void
     {
@@ -456,6 +467,10 @@ class ProductTransformerV2 implements ProductTransformerInterface
 ```
 :::
 
+::: tip
+If you have already registered this registrar, you don't need to do anything.
+:::
+
 Now add your registrar to the `laniakea.registrars` configuration key and you're almost ready to go!
 
 ```php
@@ -475,12 +490,13 @@ from the route files.
 
 Before you start, you need to [register](/getting-started#register-middleware) this middleware in your Laravel application.
 Make sure that you register this middleware to run before the Laravel's `Illuminate\Routing\Middleware\SubstituteBindings`.
-[Read more on how to do this](/getting-started#middleware-priority).
+[Learn more on how to do this](/getting-started#middleware-priority).
 
 ## Register API routes
 
-Now register you API controller under both API versions in your routes file. Use the `laniakea.version` middleware
-alias to register API route version.
+Now register your API controller under both API versions in your routes file. Use the `laniakea.version` middleware
+alias (if you chose different alias, use your own) to register API route version (don't forget to specify version name
+in middleware's first parameter).
 
 ```php
 <?php
