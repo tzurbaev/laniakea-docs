@@ -7,6 +7,11 @@ Make sure you have a Laravel `^10.0|^11.0` project set up and running on PHP `^8
 While it's entirely possible to use Laniakea in existing projects, it is recommended to start a new project to
 experiment with the package.
 
+::: tip
+There's a complete Laravel 11 demo app that uses all of Laniakea features. You can check it on 
+[GitHub](https://github.com/tzurbaev/laniakea-demo).
+:::
+
 ## Installation
 
 You can install the package via Composer:
