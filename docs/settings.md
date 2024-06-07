@@ -457,3 +457,87 @@ $user->getSettingsDecorator()->update([
     UserSetting::DARK_MODE_ENABLED->value => false,
 ], false);
 ```
+
+## Batch Actions {#batch-actions}
+
+When you create new model or update existing model, it is common to set multiple settings at once. Instead of calling
+`fill()` or `update()` methods after creating or updating model, you can use
+`Laniakea\Settings\Interfaces\SettingsValuesInterface` manager.
+
+This manager provides `getSettingsForCreate()` and `getSettingsForUpdate()` methods that return array of settings values
+that should be set for new model or updated model respectively.
+
+::: tip
+Both `getSettingsForCreate()` and `getSettingsForUpdate()` methods uses **request paths**. So pass an array that you
+would pass to `update()` method.
+:::
+
+### `getSettingsForCreate`
+
+This method accepts class name of your settings enum and optional list of current settings to save. If the second argument
+is `null`, it will use default values from the settings enum.
+
+::: code-group
+```php [Without settings]
+<?php
+
+use App\Models\User;
+use App\Settings\UserSetting;
+use Laniakea\Settings\Interfaces\SettingsValuesInterface;
+
+$settingsValues = app(SettingsValuesInterface::class);
+$user = User::create([
+    'name' => 'John Doe',
+    'settings' => $settingsValues->getSettingsForCreate(
+        UserSetting::class, 
+        null,
+    ),
+]);
+```
+```php [With settings]
+<?php
+
+use App\Models\User;
+use App\Settings\UserSetting;
+use Laniakea\Settings\Interfaces\SettingsValuesInterface;
+
+$settingsValues = app(SettingsValuesInterface::class);
+$user = User::create([
+    'name' => 'John Doe',
+    'settings' => $settingsValues->getSettingsForCreate(
+        UserSetting::class,
+        [
+            // Use array structure that you would pass to `update()` method.
+            'ui' => [
+                'dark_mode' => true,
+            ],
+        ],
+    ),
+]);
+```
+:::
+
+### `getSettingsForUpdate`
+
+This method accepts instance of `HasSettingsInterface` and array of settings that should be updated. It will merge
+default values with provided values and return array of settings that should be saved.
+
+```php
+<?php
+
+use Laniakea\Settings\Interfaces\SettingsValuesInterface;
+
+$settingsValues = app(SettingsValuesInterface::class);
+$user->update([
+    'name' => 'John Doe',
+    'settings' => $settingsValues->getSettingsForUpdate(
+        $user,
+        [
+            // Use array structure that you would pass to `update()` method.
+            'ui' => [
+                'dark_mode' => true,
+            ],
+        ],
+    ),
+]);
+```
