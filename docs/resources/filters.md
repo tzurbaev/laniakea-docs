@@ -113,7 +113,7 @@ class UserEmailFilter implements ResourceFilterInterface
 }
 ```
 
-## Filter falue
+## Filter value
 
 The **second argument** is the value of the filter. It is a user-provided value, so you might want to validate it before
 applying the filter.
