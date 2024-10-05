@@ -117,7 +117,7 @@ return [
 ```
 
 After this change, all you need to do is to send inlcusions list in the `include` field and per-page count in `limit`
-field (e.g., <nobr>`https://example.org/users?with=posts.comments&limit=50`</nobr>).
+field (e.g., <nobr>`https://example.org/users?include=posts.comments&limit=50`</nobr>).
 
 Since other fields were not changed, you can still use the `page` and `order_by` fields as before.
 
